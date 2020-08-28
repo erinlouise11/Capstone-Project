@@ -1,4 +1,6 @@
 import os
+import dateutil.parser
+import babel
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -15,7 +17,7 @@ def pagination(request, selection, type):
   if(type == 'movies'):
     movies = [movie.format() for movie in selection]
     return movies[start:end]
-  else if (type == 'actors'):
+  elif (type == 'actors'):
     actors = [actor.format() for actor in selection]
     return actors[start:end]
 

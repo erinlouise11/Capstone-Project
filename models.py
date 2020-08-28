@@ -25,9 +25,9 @@ Movies
 class Movie(db.Model):  
   __tablename__ = 'movies'
 
-  id = Column(Integer, primary_key=True)
-  title = Column(String)
-  release_date = Column(DateTime)
+  id = db.Column(db.Integer, primary_key=True)
+  title = db.Column(db.String)
+  release_date = db.Column(db.DateTime)
 
   def __init__(self, title, release_date):
     self.title = title
@@ -48,7 +48,7 @@ class Movie(db.Model):
     return {
       'id': self.id,
       'title': self.title,
-      'release_date': self.release_date
+      'release_date': str(self.release_date)
     }
 
 '''
@@ -58,10 +58,10 @@ Actors
 class Actor(db.Model):  
   __tablename__ = 'actors'
 
-  id = Column(Integer, primary_key=True)
-  name = Column(String)
-  age = Column(Integer)
-  gender = Column(Boolean) # or string
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String)
+  age = db.Column(db.Integer)
+  gender = db.Column(db.String)
 
   def __init__(self, name, age, gender):
     self.name = name
