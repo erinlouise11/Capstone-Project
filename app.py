@@ -140,22 +140,21 @@ def create_app(test_config=None):
     new_title = body.get('title')
     new_release_date = body.get('release_date')
 
-    try:
-      movie = Movie(title=new_title, release_date=new_release_date)
-      movie.insert()
+    if not('title' in body and 'release_date' in body):
+      abort(400)
 
-      movies = Movie.query.order_by(Movie.id).all()
-      current_movies = pagination(request, movies, 'movies')
+    movie = Movie(title=new_title, release_date=new_release_date)
+    movie.insert()
 
-      return jsonify({
-        'success': True,
-        'created': movie.id, 
-        'movies': current_movies,
-        'total_movies': len(movies)
-      }), 200
+    movies = Movie.query.order_by(Movie.id).all()
+    current_movies = pagination(request, movies, 'movies')
 
-    except:
-      abort(422)    
+    return jsonify({
+      'success': True,
+      'created': movie.id, 
+      'movies': current_movies,
+      'total_movies': len(movies)
+    }), 200
 
   @app.route('/actors', methods=['POST'])
   def create_actor():
@@ -166,22 +165,21 @@ def create_app(test_config=None):
     new_age = body.get('age')
     new_gender = body.get('gender')
 
-    try:
-      actor = Actor(title=new_title, release_date=new_release_date)
-      actor.insert()
+    if not('name' in body and 'age' in body and 'gender' in body):
+      abort(400)
 
-      actors = Actor.query.order_by(Actor.id).all()
-      current_actors = pagination(request, actors, 'actors')
+    actor = Actor(name=new_name, age=new_age, gender=new_gender)
+    actor.insert()
 
-      return jsonify({
-        'success': True,
-        'created': actor.id, 
-        'actors': current_actors, 
-        'total_actors': len(actors)
-      }), 200
+    actors = Actor.query.order_by(Actor.id).all()
+    current_actors = pagination(request, actors, 'actors')
 
-    except:
-      abort(422)   
+    return jsonify({
+      'success': True,
+      'created': actor.id, 
+      'actors': current_actors, 
+      'total_actors': len(actors)
+    }), 200
 
   @app.route('/movies/<int:movie_id>', methods=['PATCH'])
   def update_movie(movie_id):
