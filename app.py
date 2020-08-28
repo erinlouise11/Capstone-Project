@@ -4,6 +4,21 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import setup_db, Movie, Actor
 
+DETAILS_PER_PAGE = 10
+
+# paginating either the movies or actors
+def pagination(request, selection, type):
+  page = request.args.get('page', 1, type=int)
+  start = (page - 1) * DETAILS_PER_PAGE
+  end = start + DETAILS_PER_PAGE
+
+  if(type == 'movies'):
+    movies = [movie.format() for movie in selection]
+    return movies[start:end]
+  else if (type == 'actors'):
+    actors = [actor.format() for actor in selection]
+    return actors[start:end]
+
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
@@ -19,69 +34,202 @@ def create_app(test_config=None):
     response.headers.add('Acess-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')
     return response
 
-   # GET request to get all the categories
   @app.route('/movies', methods=['GET'])
   def get_movies():
-    try:
+    movies = Movie.query.order_by(Movie.title).all()
+    current_movies = pagination(request, movies, 'movies')
 
-    except:
-      abort(404)    
+    if(len(current_movies) == 0):
+      abort(404)
+    
+    return jsonify({
+      'success': True, 
+      'movies': current_movies,
+      'total_movies': len(movies)
+    }), 200
 
- # GET request to get all the categories
   @app.route('/actors', methods=['GET'])
   def get_actors():
-    try:
+    actors = Actor.query.order_by(Actor.name).all()
+    current_actors = pagination(request, actors, 'actors')
 
-    except:
-      abort(404)    
+    if(len(current_actors) == 0):
+      abort(404)
 
- # GET request to get all the categories
+    return jsonify({
+      'success': True, 
+      'actors': current_actors, 
+      'total_actors': len(actors)
+    }), 200
+  
+  @app.route('/movies/<int:movie_id>', methods=['GET'])
+  def get_specific_movie(movie_id):
+    specific_movie = Movie.query.filter_by(id=movie_id).one_or_none()    
+
+    if(specific_movie is None):
+      abort(404)  
+    
+    return jsonify({
+      'success': True, 
+      'movie': specific_movie.format()
+    }), 200
+
+  @app.route('/actors/<int:actor_id>', methods=['GET'])
+  def get_specific_actor(actor_id):
+    specific_actor = Actor.query.filter_by(id=actor_id).one_or_none()
+
+    if(specific_actor is None):
+      abort(404)
+    
+    return jsonify({
+      'success': True, 
+      'actor': specific_actor.format()
+    }), 200
+
   @app.route('/movies/<int:movie_id>', methods=['DELETE'])
-  def delete_movies():
+  def delete_movies(movie_id):
     try:
+      movie = Movie.query.filter_by(id=movie_id).one_or_none()
+
+      if(movie is None):
+        abort(404)
+
+      movie.delete()
+      movies = Movie.query.order_by(Movie.id).all()
+      current_movies = pagination(request, movies, 'movies')
+
+      return jsonify({
+        'success': True, 
+        'deleted': movie_id, 
+        'movies': current_movies,
+        'total_movies': len(movies)
+      }), 200     
 
     except:
-      abort(404)    
+      abort(422)    
 
- # GET request to get all the categories
   @app.route('/actors/<int:actor_id>', methods=['DELETE'])
-  def delete_actors():
+  def delete_actors(actor_id):
     try:
+      actor = Actor.query.filter_by(id=actor_id).one_or_none()
+
+      if(actor is None):
+        abort(404)
+
+      actor.delete()
+      actors = Actor.query.order_by(Actor.id).all()
+      current_actors = pagination(request, actors, 'actors')
+
+      return jsonify({
+        'success': True, 
+        'deleted': actor_id, 
+        'actors': current_actors, 
+        'total_actors': len(actors)
+      }), 200     
 
     except:
-      abort(404)    
+      abort(422) 
 
- # GET request to get all the categories
   @app.route('/movies', methods=['POST'])
   def create_movie():
+    # getting the json body and splitting the elemtents
+    body = request.get_json()
+
+    new_title = body.get('title')
+    new_release_date = body.get('release_date')
+
     try:
+      movie = Movie(title=new_title, release_date=new_release_date)
+      movie.insert()
+
+      movies = Movie.query.order_by(Movie.id).all()
+      current_movies = pagination(request, movies, 'movies')
+
+      return jsonify({
+        'success': True,
+        'created': movie.id, 
+        'movies': current_movies,
+        'total_movies': len(movies)
+      }), 200
 
     except:
-      abort(404)    
+      abort(422)    
 
- # GET request to get all the categories
   @app.route('/actors', methods=['POST'])
   def create_actor():
+    # getting the json body and splitting the elemtents
+    body = request.get_json()
+
+    new_name = body.get('name')
+    new_age = body.get('age')
+    new_gender = body.get('gender')
+
     try:
+      actor = Actor(title=new_title, release_date=new_release_date)
+      actor.insert()
+
+      actors = Actor.query.order_by(Actor.id).all()
+      current_actors = pagination(request, actors, 'actors')
+
+      return jsonify({
+        'success': True,
+        'created': actor.id, 
+        'actors': current_actors, 
+        'total_actors': len(actors)
+      }), 200
 
     except:
-      abort(404)    
+      abort(422)   
 
- # GET request to get all the categories
   @app.route('/movies/<int:movie_id>', methods=['PATCH'])
-  def update_movie():
+  def update_movie(movie_id):
+    specific_movie = Movie.query.filter_by(id=movie_id).one_or_none()
+
+    if(specific_movie is None):
+      abort(404)
+
+    body = request.get_json()
+
     try:
-
+      if('title' in body):
+        specific_movie.title = body['title']
+      if('release_date' in body):
+        specific_movie.release_date = body['release_date']
     except:
-      abort(404)    
+      abort(400)    
 
- # GET request to get all the categories
+    specific_movie.update()
+
+    return jsonify({
+      'success': True, 
+      'actor': specific_movie.format()
+    }), 200
+
   @app.route('/actors/<int:actor_id>', methods=['PATCH'])
-  def update_actor():
-    try:
+  def update_actor(actor_id):
+    specific_actor = Actor.query.filter_by(id=actor_id).one_or_none()
 
+    if(specific_actor is None):
+      abort(404)
+
+    body = request.get_json()
+
+    try:
+      if('name' in body):
+        specific_actor.name = body['name']
+      if('age' in body):
+        specific_actor.age = body['age']
+      if('gender' in body):
+        specific_actor.gender = body['gender']
     except:
-      abort(404)    
+      abort(400)    
+
+    specific_actor.update()
+
+    return jsonify({
+      'success': True, 
+      'actor': specific_actor.format()
+    }), 200
 
 
   # error handlers (400, 404, 405, 422, 500)
