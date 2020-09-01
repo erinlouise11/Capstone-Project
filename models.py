@@ -7,10 +7,7 @@ database_path = 'postgres://postgres:Psqlpass!@localhost:5432/agency'
 
 db = SQLAlchemy()
 
-'''
-setup_db(app)
-    binds a flask application and a SQLAlchemy service
-'''
+# setting up the DB
 def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -18,10 +15,7 @@ def setup_db(app, database_path=database_path):
     db.init_app(app)
     db.create_all()
 
-'''
-Movies
-
-'''
+# Movies
 class Movie(db.Model):  
   __tablename__ = 'movies'
 
@@ -51,10 +45,7 @@ class Movie(db.Model):
       'release_date': str(self.release_date)
     }
 
-'''
-Actors
-
-'''
+# Actors 
 class Actor(db.Model):  
   __tablename__ = 'actors'
 

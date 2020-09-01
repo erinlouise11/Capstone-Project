@@ -6,9 +6,8 @@ from flaskr import create_app
 from models import setup_db, Movie, Actor
 
 class AgencyTestCase(unittest.TestCase):
-
     def setUp(self):
-        """Define test variables and initialize app."""
+        # Define test variables and initialize app.
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "agency"
@@ -23,7 +22,7 @@ class AgencyTestCase(unittest.TestCase):
             self.db.create_all()
     
     def tearDown(self):
-        """Executed after reach test"""
+        # Executed after reach test
         pass
 
     # test and error tests for each enpoint. Categories endpoint naturally has no error checking. 

@@ -34,7 +34,7 @@ def create_app(test_config=None):
   @app.after_request
   def after_request(response):
     response.headers.add('Acess-Control-Allow-Headers', 'Content-Type, Authorization, true')
-    response.headers.add('Acess-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')
+    response.headers.add('Acess-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
     return response
   
   # endpoints
@@ -44,6 +44,7 @@ def create_app(test_config=None):
         "success": True
     })
 
+  # display all the movies
   @app.route('/movies', methods=['GET'])
   @requires_auth('get:movies')
   def get_movies():
@@ -59,6 +60,7 @@ def create_app(test_config=None):
       'total_movies': len(movies)
     }), 200
 
+  # display all the actors
   @app.route('/actors', methods=['GET'])
   @requires_auth('get:actors')
   def get_actors():
@@ -74,6 +76,7 @@ def create_app(test_config=None):
       'total_actors': len(actors)
     }), 200
   
+  # display a specific movie
   @app.route('/movies/<int:movie_id>', methods=['GET'])
   @requires_auth('get:movies')
   def get_specific_movie(movie_id):
@@ -87,6 +90,7 @@ def create_app(test_config=None):
       'movie': specific_movie.format()
     }), 200
 
+  # display a specific actor
   @app.route('/actors/<int:actor_id>', methods=['GET'])
   @requires_auth('get:actors')
   def get_specific_actor(actor_id):
@@ -100,6 +104,7 @@ def create_app(test_config=None):
       'actor': specific_actor.format()
     }), 200
 
+  # delete a movie
   @app.route('/movies/<int:movie_id>', methods=['DELETE'])
   @requires_auth('delete:movies')
   def delete_movies(movie_id):
@@ -123,6 +128,7 @@ def create_app(test_config=None):
     except:
       abort(422)    
 
+  # delete an actor
   @app.route('/actors/<int:actor_id>', methods=['DELETE'])
   @requires_auth('delete:actors')
   def delete_actors(actor_id):
@@ -146,6 +152,7 @@ def create_app(test_config=None):
     except:
       abort(422) 
 
+  # create a movie
   @app.route('/movies', methods=['POST'])
   @requires_auth('post:movies')
   def create_movie():
@@ -171,6 +178,7 @@ def create_app(test_config=None):
       'total_movies': len(movies)
     }), 200
 
+  # create an actor
   @app.route('/actors', methods=['POST'])
   @requires_auth('post:actors')
   def create_actor():
@@ -197,6 +205,7 @@ def create_app(test_config=None):
       'total_actors': len(actors)
     }), 200
 
+  # update a movie
   @app.route('/movies/<int:movie_id>', methods=['PATCH'])
   @requires_auth('patch:movies')
   def update_movie(movie_id):
@@ -222,6 +231,7 @@ def create_app(test_config=None):
       'movie': specific_movie.format()
     }), 200
 
+  # update an actor
   @app.route('/actors/<int:actor_id>', methods=['PATCH'])
   @requires_auth('patch:actors')
   def update_actor(actor_id):
