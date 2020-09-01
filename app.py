@@ -5,6 +5,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import setup_db, Movie, Actor
+from .auth.auth import AuthError, requires_auth
 
 DETAILS_PER_PAGE = 10
 
@@ -17,7 +18,7 @@ def pagination(request, selection, type):
   if(type == 'movies'):
     movies = [movie.format() for movie in selection]
     return movies[start:end]
-  elif (type == 'actors'):
+  elif(type == 'actors'):
     actors = [actor.format() for actor in selection]
     return actors[start:end]
 
@@ -35,8 +36,16 @@ def create_app(test_config=None):
     response.headers.add('Acess-Control-Allow-Headers', 'Content-Type, Authorization, true')
     response.headers.add('Acess-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')
     return response
+  
+  # endpoints
+  @app.route('/')
+  def handler():
+    return jsonify({
+        "success": True
+    })
 
   @app.route('/movies', methods=['GET'])
+  @requires_auth('get:movies')
   def get_movies():
     movies = Movie.query.order_by(Movie.title).all()
     current_movies = pagination(request, movies, 'movies')
@@ -51,6 +60,7 @@ def create_app(test_config=None):
     }), 200
 
   @app.route('/actors', methods=['GET'])
+  @requires_auth('get:actors')
   def get_actors():
     actors = Actor.query.order_by(Actor.name).all()
     current_actors = pagination(request, actors, 'actors')
@@ -65,6 +75,7 @@ def create_app(test_config=None):
     }), 200
   
   @app.route('/movies/<int:movie_id>', methods=['GET'])
+  @requires_auth('get:movies')
   def get_specific_movie(movie_id):
     specific_movie = Movie.query.filter_by(id=movie_id).one_or_none()    
 
@@ -77,6 +88,7 @@ def create_app(test_config=None):
     }), 200
 
   @app.route('/actors/<int:actor_id>', methods=['GET'])
+  @requires_auth('get:actors')
   def get_specific_actor(actor_id):
     specific_actor = Actor.query.filter_by(id=actor_id).one_or_none()
 
@@ -89,6 +101,7 @@ def create_app(test_config=None):
     }), 200
 
   @app.route('/movies/<int:movie_id>', methods=['DELETE'])
+  @requires_auth('delete:movies')
   def delete_movies(movie_id):
     try:
       movie = Movie.query.filter_by(id=movie_id).one_or_none()
@@ -111,6 +124,7 @@ def create_app(test_config=None):
       abort(422)    
 
   @app.route('/actors/<int:actor_id>', methods=['DELETE'])
+  @requires_auth('delete:actors')
   def delete_actors(actor_id):
     try:
       actor = Actor.query.filter_by(id=actor_id).one_or_none()
@@ -133,6 +147,7 @@ def create_app(test_config=None):
       abort(422) 
 
   @app.route('/movies', methods=['POST'])
+  @requires_auth('post:movies')
   def create_movie():
     # getting the json body and splitting the elemtents
     body = request.get_json()
@@ -157,6 +172,7 @@ def create_app(test_config=None):
     }), 200
 
   @app.route('/actors', methods=['POST'])
+  @requires_auth('post:actors')
   def create_actor():
     # getting the json body and splitting the elemtents
     body = request.get_json()
@@ -182,6 +198,7 @@ def create_app(test_config=None):
     }), 200
 
   @app.route('/movies/<int:movie_id>', methods=['PATCH'])
+  @requires_auth('patch:movies')
   def update_movie(movie_id):
     specific_movie = Movie.query.filter_by(id=movie_id).one_or_none()
 
@@ -202,10 +219,11 @@ def create_app(test_config=None):
 
     return jsonify({
       'success': True, 
-      'actor': specific_movie.format()
+      'movie': specific_movie.format()
     }), 200
 
   @app.route('/actors/<int:actor_id>', methods=['PATCH'])
+  @requires_auth('patch:actors')
   def update_actor(actor_id):
     specific_actor = Actor.query.filter_by(id=actor_id).one_or_none()
 
@@ -231,8 +249,15 @@ def create_app(test_config=None):
       'actor': specific_actor.format()
     }), 200
 
+  # error handlers (AuthError, 400, 404, 405, 422, 500)
+  @app.errorhandler(AuthError)
+  def authentication_eror(error):
+    return jsonify({
+        'success': False,
+        'error': error.status_code,
+        'message': error.error['description']
+    }), error.status_code
 
-  # error handlers (400, 404, 405, 422, 500)
   @app.errorhandler(400)
   def not_found(error):
     return jsonify({
