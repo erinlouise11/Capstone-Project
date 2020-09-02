@@ -25,7 +25,7 @@ class AgencyTestCase(unittest.TestCase):
         # Executed after reach test
         pass
 
-    # test and error tests for each enpoint. Categories endpoint naturally has no error checking. 
+    # test and error tests for each enpoint
     def test_get_paginated_movies(self):
         res = self.client().get('/movies')
         data = json.loads(res.data)
