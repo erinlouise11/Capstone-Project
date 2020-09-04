@@ -1,6 +1,11 @@
 # Capstone Project - Casting Agency
 
-Casting Agency URL: https://casting-agency-heroku-app.herokuapp.com/
+This is the capstone project for the Udacity Full Stack Nanodegree program. 
+The Casting Agency models a company that is responsible for creating movies and managing and assigning actors to those movies. The agency employs a casting assistant, casting director and an executive producer who all have different roles / permissions in the agency.
+
+### URLs
+
+Casting Agency URL: https://casting-agency-heroku-app.herokuapp.com/ 
 Heroku GitHub repository: https://git.heroku.com/casting-agency-heroku-app.git 
 
 ## Getting Started
