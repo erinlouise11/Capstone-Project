@@ -38,6 +38,8 @@ This will install all of the required packages we selected within the `requireme
 
 - [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/#) is the extension used to handle cross origin requests. 
 
+- [jose](https://python-jose.readthedocs.io/en/latest/) JavaScript Object Signing and Encryption for JWTs. Useful for encoding, decoding, and verifying JWTS.
+
 ## Running the server
 
 From within the directory first ensure you are working using your created virtual environment.
@@ -52,7 +54,29 @@ flask run
 
 Setting the `FLASK_ENV` variable to `development` will detect file changes and restart the server automatically.
 
-Setting the `FLASK_APP` variable to `flaskr` directs flask to use the `flaskr` directory and the `__init__.py` file to find the application. 
+Setting the `FLASK_APP` variable to application `app.py`. 
+
+## Authentication
+There are secret and JWTs are stored in the .env file which is exported into project variables using the dotenv library. 
+
+### Registered Users 
+#### Casting Assistant
+```bash
+email: assistant@castingagency.com
+password: elm111194
+```
+
+#### Casting Director
+```bash
+email: murphyerinlouise@gmail.com
+password: elm111194
+```
+
+#### Executive Producer
+```bash
+email: erinlouise11@gmail.com
+password: elm11194
+```
 
 ## Endpoints
 
