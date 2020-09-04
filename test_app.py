@@ -2,15 +2,25 @@ import os
 import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
-from flaskr import create_app
+from app import create_app
 from models import setup_db, Movie, Actor
+from dotenv import load_dotenv
+
+load_dotenv()
+
+casting_assistant = os.environ.get('CASTING_ASSISTANT_JWT')
+casting_director = os.environ.get('CASTING_DIRECTOR_JWT')
+executive_producer = os.environ.get('EXECUTIVE_PRODUCER_JWT')
+
+def get_headers(token):
+    return {'Authorization': f'Bearer {token}'}
 
 class AgencyTestCase(unittest.TestCase):
     def setUp(self):
         # Define test variables and initialize app.
         self.app = create_app()
         self.client = self.app.test_client
-        self.database_name = "agency"
+        self.database_name = "test_agency"
         self.database_path = "postgres://{}:{}@{}/{}".format('postgres', 'Psqlpass!', 'localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
@@ -25,9 +35,9 @@ class AgencyTestCase(unittest.TestCase):
         # Executed after reach test
         pass
 
-    # test and error tests for each enpoint
+    # test and error tests for each enpoint (get, delete, post, patch)
     def test_get_paginated_movies(self):
-        res = self.client().get('/movies')
+        res = self.client().get('/movies', headers=get_headers(casting_assistant))
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -36,7 +46,7 @@ class AgencyTestCase(unittest.TestCase):
         self.assertTrue(len(data['movies']))
 
     def test_error_get_paginated_movies(self):
-        res = self.client().get('/movies?page=1000')
+        res = self.client().get('/movies?page=1000', headers=get_headers(casting_assistant))
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
@@ -44,7 +54,7 @@ class AgencyTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Not found')
 
     def test_get_paginated_actors(self):
-        res = self.client().get('/actors')
+        res = self.client().get('/actors', headers=get_headers(casting_assistant))
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -53,7 +63,7 @@ class AgencyTestCase(unittest.TestCase):
         self.assertTrue(len(data['actors']))
 
     def test_error_get_paginated_actors(self):
-        res = self.client().get('/actors?page=1000')
+        res = self.client().get('/actors?page=1000', headers=get_headers(casting_assistant))
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
@@ -61,7 +71,7 @@ class AgencyTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Not found')
 
     def test_delete_movie(self):    
-        res = self.client().delete('/movies/1')
+        res = self.client().delete('/movies/2', headers=get_headers(executive_producer))
         data = json.loads(res.data)
 
         movie = Movie.query.filter(Movie.id == 1).one_or_none()
@@ -74,7 +84,7 @@ class AgencyTestCase(unittest.TestCase):
         self.assertEqual(movie, None)
 
     def test_error_delete_movie(self):    
-        res = self.client().delete('/movies/5000')
+        res = self.client().delete('/movies/5000', headers=get_headers(executive_producer))
         data = json.loads(res.data)
         
         self.assertEqual(res.status_code, 422)
@@ -82,7 +92,7 @@ class AgencyTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Unprocessable')
 
     def test_delete_actor(self):    
-        res = self.client().delete('/actors/1')
+        res = self.client().delete('/actors/2', headers=get_headers(casting_director))
         data = json.loads(res.data)
 
         actor = Actor.query.filter(Actor.id == 1).one_or_none()
@@ -95,7 +105,7 @@ class AgencyTestCase(unittest.TestCase):
         self.assertEqual(actor, None)
 
     def test_error_delete_actor(self):    
-        res = self.client().delete('/actors/5000')
+        res = self.client().delete('/actors/5000', headers=get_headers(casting_director))
         data = json.loads(res.data)
         
         self.assertEqual(res.status_code, 422)
@@ -103,7 +113,7 @@ class AgencyTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Unprocessable')
     
     def test_create_movie(self):
-        res = self.client().post('/movies', json={'title': 'Dr. Strange', 'release_date': '10-20-2016'})
+        res = self.client().post('/movies', json={'title': 'Dr. Strange', 'release_date': '10-20-2016'}, headers=get_headers(executive_producer))
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -112,7 +122,7 @@ class AgencyTestCase(unittest.TestCase):
         self.assertTrue(len(data['movies']))
 
     def test_error_create_movie(self):
-        res = self.client().post('/movies/100', json={'title': 'A Horrible Year', 'release_date': '01-01-2020'})
+        res = self.client().post('/movies/100', json={'title': 'A Horrible Year', 'release_date': '01-01-2020'}, headers=get_headers(executive_producer))
         data = json.loads(res.data)
         
         self.assertEqual(res.status_code, 405)
@@ -120,7 +130,7 @@ class AgencyTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Method not allowed')
 
     def test_create_actor(self):
-        res = self.client().post('/actors', json={'name': 'Rachel McAdams', 'age': 41, 'gender': 'Female'})
+        res = self.client().post('/actors', json={'name': 'Rachel McAdams', 'age': 41, 'gender': 'Female'}, headers=get_headers(casting_director))
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -129,7 +139,7 @@ class AgencyTestCase(unittest.TestCase):
         self.assertTrue(len(data['actors']))
 
     def test_error_create_actor(self):
-        res = self.client().post('/actors/100', json={'name': 'Dorris Bob', 'age': 11, 'gender': 'Male'})
+        res = self.client().post('/actors/100', json={'name': 'Dorris Bob', 'age': 11, 'gender': 'Male'}, headers=get_headers(casting_director))
         data = json.loads(res.data)
         
         self.assertEqual(res.status_code, 405)
@@ -137,7 +147,7 @@ class AgencyTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Method not allowed')
 
     def test_update_movie(self):
-        res = self.client().post('/movies/2', json={'release_date': '11-11-2015'})
+        res = self.client().patch('/movies/2', json={'release_date': '11-11-2015'}, headers=get_headers(casting_director))
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -145,15 +155,15 @@ class AgencyTestCase(unittest.TestCase):
         self.assertTrue(data['movie'])
 
     def test_error_update_movie(self):
-        res = self.client().post('/movies/2', json={'rel_dat': '11-11-2015'})
+        res = self.client().patch('/movies/1000', json={'release_date': '11-11-2015'}, headers=get_headers(casting_director))
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'bad request')  
+        self.assertEqual(data['message'], 'Not found')  
 
     def test_update_actor(self):    
-        res = self.client().post('/actors/2', json={'age': 50})
+        res = self.client().patch('/actors/2', json={'age': 50}, headers=get_headers(casting_director))
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -161,12 +171,12 @@ class AgencyTestCase(unittest.TestCase):
         self.assertTrue(data['actor'])
 
     def test_error_update_actor(self):
-        res = self.client().post('/actors/2', json={'ageeee': 50})
+        res = self.client().patch('/actors/1000', json={'age': 50}, headers=get_headers(casting_director))
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Bad request')  
+        self.assertEqual(data['message'], 'Not found')  
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
