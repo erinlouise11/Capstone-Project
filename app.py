@@ -114,6 +114,7 @@ def create_app(test_config=None):
       if(movie is None):
         abort(404)
 
+      # delete the movie and display the remaining
       movie.delete()
       movies = Movie.query.order_by(Movie.id).all()
       current_movies = pagination(request, movies, 'movies')
@@ -138,6 +139,7 @@ def create_app(test_config=None):
       if(actor is None):
         abort(404)
 
+      # delete the actor and display the remaining
       actor.delete()
       actors = Actor.query.order_by(Actor.id).all()
       current_actors = pagination(request, actors, 'actors')
@@ -162,9 +164,11 @@ def create_app(test_config=None):
     new_title = body.get('title')
     new_release_date = body.get('release_date')
 
+    # if the required data is not in the body then its abort due to bad request
     if not('title' in body and 'release_date' in body):
       abort(400)
 
+    # create the new movie assigning new data to columns
     movie = Movie(title=new_title, release_date=new_release_date)
     movie.insert()
 
@@ -189,9 +193,11 @@ def create_app(test_config=None):
     new_age = body.get('age')
     new_gender = body.get('gender')
 
+    # if the required data is not in the body then its abort due to bad request
     if not('name' in body and 'age' in body and 'gender' in body):
       abort(400)
 
+    # create the new actor assigning new data to columns
     actor = Actor(name=new_name, age=new_age, gender=new_gender)
     actor.insert()
 
@@ -216,6 +222,7 @@ def create_app(test_config=None):
 
     body = request.get_json()
 
+    # attempt to get the new data
     try:
       if('title' in body):
         specific_movie.title = body['title']
@@ -224,6 +231,7 @@ def create_app(test_config=None):
     except:
       abort(400)    
 
+    # update the movie using the assigned data
     specific_movie.update()
 
     return jsonify({
@@ -242,6 +250,7 @@ def create_app(test_config=None):
 
     body = request.get_json()
 
+    # attempt to get the new data
     try:
       if('name' in body):
         specific_actor.name = body['name']
@@ -252,6 +261,7 @@ def create_app(test_config=None):
     except:
       abort(400)    
 
+    # update the actor using the assigned data
     specific_actor.update()
 
     return jsonify({
