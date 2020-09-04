@@ -1,7 +1,7 @@
 # Capstone Project - Casting Agency
 
-Casting Agency URL: 
-Heroku GitHub repository: 
+Casting Agency URL: https://casting-agency-heroku-app.herokuapp.com/
+Heroku GitHub repository: https://git.heroku.com/casting-agency-heroku-app.git 
 
 ## Getting Started
 
@@ -55,6 +55,7 @@ GET '/movies'
 - First checks that the token provided is allowed to perform this operation. If authorized, then fetches a dictionary of movies.
 - Request Arguments: token
 - Returns: Each object in the movies dictionary and an object showing the total number of movies. 
+```bash
 {
     "movies": [
         {
@@ -71,11 +72,13 @@ GET '/movies'
     "success": true,
     "total_movies": 2
 }
+```
 
 GET '/actors'
 - First checks that the token provided is allowed to perform this operation. If authorized, then fetches a dictionary of actors.
 - Request Arguments: token
 - Returns: Each object in the actors dictionary and an object showing the total number of actors. 
+```bash
 {
     "actors": [
         {
@@ -94,33 +97,40 @@ GET '/actors'
     "success": true,
     "total_actors": 2
 }
+```
 
 DELETE '/movies/<int:movie_id>'
 - First checks that the token provided is allowed to perform this operation. If authorized, then takes in a movie ID, if the movie exists, then it is deleted from the database
 - Request Arguments: token, movie_id 
 - Returns: The ID of the deleted movie and each object in the list of modified movies and an object showing the total number of movies.
+```bash
 {
     "deleted": 1,
     "movies": [],
     "success": true,
     "total_movies": 0
 }
+```
 
 DELETE '/actors/<int:actor_id>'
 - First checks that the token provided is allowed to perform this operation. If authorized, then takes in a actor ID, if the actor exists, then it is deleted from the database
 - Request Arguments: token, actor_id 
 - Returns: The ID of the deleted actor and each object in the list of modified actors and an object showing the total number of actors.
+```bash
 {
     "actors": [],
     "deleted": 1,
     "success": true,
     "total_actors": 0
 }
+```
 
 POST '/movies'
 - First checks that the token provided is allowed to perform this operation. If authorized, then takes in an object with key value pairs for the new movie namely the title and release_date. 
 - Request Arguments: token
 - Returns: An object containing the newly created movie's id, each object in the list of modified movies and an object showing the total number of movies.
+```bash
+{
     "created": 2,
     "movies": [
         {
@@ -132,11 +142,13 @@ POST '/movies'
     "success": true,
     "total_movies": 1
 }
+```
 
 POST '/actors'
 - First checks that the token provided is allowed to perform this operation. If authorized, then takes in an object with key value pairs for the new actor namely the name, age and gender. 
 - Request Arguments: token
 - Returns: An object containing the newly created actors's id, each object in the list of modified actors and an object showing the total number of actors.
+```bash
 {
     "actors": [
         {
@@ -150,11 +162,13 @@ POST '/actors'
     "success": true,
     "total_actors": 1
 }
+```
 
 PATCH '/movies'
 - First checks that the token provided is allowed to perform this operation. If authorized, then takes in an object with key value pairs for the desired fields to be changes. 
 - Request Arguments: token, movie_id
 - Returns: An object containing the updated movie.
+```bash
 {
     "movie": {
         "id": 2,
@@ -163,11 +177,13 @@ PATCH '/movies'
     },
     "success": true
 }
+```
 
 PATCH '/actors'
 - First checks that the token provided is allowed to perform this operation. If authorized, then takes in an object with key value pairs for the desired fields to be changes. 
 - Request Arguments: token, actor_id
 - Returns: An object containing the updated actor.
+```bash
 {
     "actor": {
         "age": 35,
@@ -177,3 +193,4 @@ PATCH '/actors'
     },
     "success": true
 }
+```
