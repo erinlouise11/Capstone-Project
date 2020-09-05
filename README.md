@@ -68,7 +68,7 @@ get:actors | get:movies
 #### Login details:
 ```bash
 email: assistant@castingagency.com
-password: elm111194
+password: Erinlouise94
 ```
 
 ### Casting Director
@@ -83,7 +83,7 @@ patch:actors  | patch:movies
 #### Login details:
 ```bash
 email: murphyerinlouise@gmail.com
-password: elm111194
+password: Erinlouise94
 ```
 
 ### Executive Producer
@@ -99,7 +99,7 @@ patch:actors  | patch:movies
 #### Login details:
 ```bash
 email: erinlouise11@gmail.com
-password: elm11194
+password: Erinlouise94
 ```
 
 ## Endpoints
