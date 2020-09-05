@@ -57,22 +57,42 @@ Setting the `FLASK_ENV` variable to `development` will detect file changes and r
 Setting the `FLASK_APP` variable to application `app.py`. 
 
 ## Authentication
-There are secret and JWTs are stored in the .env file which is exported into project variables using the dotenv library. 
+
 
 ### Registered Users 
 #### Casting Assistant
+A casting assistant is the lowest level of authority and is only permitted to view actors and movies.
+```bash
+get:actors | get:movies
+```
+Login details:
 ```bash
 email: assistant@castingagency.com
 password: elm111194
 ```
 
 #### Casting Director
+A casting director mid-level authority and is permitted to view actors and movies as well as deleting an actor or adding an actor in the database and lastly, modifying actors and movies.
+```bash
+get:actors    | get:movies 
+delete:actors | post:actors
+patch:actors  | patch:movies
+```
+Login details:
 ```bash
 email: murphyerinlouise@gmail.com
 password: elm111194
 ```
 
 #### Executive Producer
+The executive producer is the highest level of authority and is permitted to do any of the actions across the application.
+```bash
+get:actors    | get:movies 
+delete:actors | delete:movies 
+post:actors   | post:movies
+patch:actors  | patch:movies
+```
+Login details:
 ```bash
 email: erinlouise11@gmail.com
 password: elm11194
