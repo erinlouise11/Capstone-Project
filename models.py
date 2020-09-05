@@ -3,7 +3,10 @@ from sqlalchemy import Column, String, Integer, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-DATABASE_URL = os.environ['DATABASE_URL']
+database_path = os.environ.get('DATABASE_URL')
+if not database_path:
+    database_path = 'postgres://postgres:Psqlpass!@localhost:5432/agency'
+
 # database_path = 'postgres://hkazlbkmurlrwc:496c61b19d8c1c8f853c0396c3bb924407fd5420f06b80534e962f6062130977@ec2-35-153-12-59.compute-1.amazonaws.com:5432/d58kc275doqmdd'
 
 db = SQLAlchemy()
@@ -11,8 +14,8 @@ db = SQLAlchemy()
 # setting up the DB
 
 
-def setup_db(app, database_path=DATABASE_URL):
-    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+def setup_db(app, database_path=database_path):
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)

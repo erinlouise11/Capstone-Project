@@ -5,10 +5,14 @@ from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
 
-AUTH0_DOMAIN = os.environ['AUTH0_DOMAIN']
-ALGORITHMS = os.environ['ALGORITHMS']
-API_AUDIENCE = os.environ['API_AUDIENCE']
-SECRET = os.environ['SECRET']
+AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
+ALGORITHMS = os.environ.get('ALGORITHMS')
+API_AUDIENCE = os.environ.get('API_AUDIENCE')
+
+if not AUTH0_DOMAIN and not ALGORITHMS and not API_AUDIENCE:
+    AUTH0_DOMAIN = 'un1corn.us.auth0.com'
+    ALGORITHMS = ['RS256']
+    API_AUDIENCE = 'agency'
 
 # AuthError Exception
 
